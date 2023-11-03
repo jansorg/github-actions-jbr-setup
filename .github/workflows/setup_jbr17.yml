@@ -1,0 +1,40 @@
+#file: noinspection YAMLSchemaValidation
+name: JetBrains Runtime Setup
+description: Setup JetBrains Runtime 17
+runs:
+  using: composite
+  env:
+    JAVA_DIR: '$HOME/.jdks/jbr17'
+
+    # Releases can be found at https://github.com/JetBrains/JetBrainsRuntime/releases
+    JBR_URL_Linux_X64: 'https://cache-redirector.jetbrains.com/intellij-jbr/jbr_jcef-17.0.9-linux-x64-b1000.46.tar.gz'b
+    JBR_URL_Windows_X64: 'https://cache-redirector.jetbrains.com/intellij-jbr/jbr_jcef-17.0.9-windows-x64-b1000.46.tar.gz'
+    JBR_URL_macOS_X64: 'https://cache-redirector.jetbrains.com/intellij-jbr/jbr_jcef-17.0.9-osx-x64-b1000.46.tar.gz'
+    JBR_URL_macOS_ARM64: 'https://cache-redirector.jetbrains.com/intellij-jbr/jbr_jcef-17.0.9-osx-aarch64-b1000.46.tar.gz'
+
+  steps:
+    - name: Install and Setup JetBrains Runtime (Linux / Windows)
+      shell: bash
+      if: runner.os != macOS
+      run: |
+        mkdir -p "$JAVA_DIR"
+        wget -q -O - "$JBR_URL_${{ runner.os }}_${{ runner.arch }}" | tar -xzf - --strip-components=1 -C "$JAVA_DIR"
+        echo "JAVA_HOME=$JAVA_DIR" >> $GITHUB_ENV
+
+    - name: Install and Setup JetBrains Runtime (macOS)
+      shell: bash
+      if: runner.os == macOS
+      run: |
+        mkdir -p "$JAVA_HOME"
+        wget -q -O - "$JBR_URL_${{ runner.os }}_${{ runner.arch }}" | tar -xzf - --strip-components=1 -C "$JAVA_DIR"
+        echo "JAVA_HOME=$JAVA_DIR/Contents/Home" >> $GITHUB_ENV
+
+    - name: Setup PATH
+      shell: bash
+      run: echo "PATH=$JAVA_HOME/bin:$PATH" >> $GITHUB_ENV
+
+    - name: Verify Java
+      shell: bash
+      run: |
+        java --version
+        which java
