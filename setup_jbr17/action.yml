@@ -3,23 +3,35 @@ description: Setup JetBrains Runtime 17
 runs:
   using: composite
   steps:
-    - name: Install Windows Requirements to Install JetBrains Install
-      if: runner.os == 'Windows'
-      shell: bash
-      run: choco install wget -y
-
-    - name: Install and Setup JetBrains Runtime
-      if: runner.os != 'macOS'
+    - name: Install and Setup JetBrains Runtime (Linux)
+      if: runner.os == 'Linux'
       shell: bash
       env:
         JBR_URL_Linux_X64: 'https://cache-redirector.jetbrains.com/intellij-jbr/jbr_jcef-17.0.9-linux-x64-b1000.46.tar.gz'
-        JBR_URL_Windows_X64: 'https://cache-redirector.jetbrains.com/intellij-jbr/jbr_jcef-17.0.9-windows-x64-b1000.46.tar.gz'
       run: |
         mkdir -p "$HOME/.jdks/jbr17"
         wget -q -O - "$JBR_URL_${{ runner.os }}_${{ runner.arch }}" | tar -xzf - --strip-components=1 -C "$HOME/.jdks/jbr17"
         echo "JAVA_HOME=$HOME/.jdks/jbr17" >> $GITHUB_ENV
+        echo "PATH=$HOME/.jdks/jbr17/bin:$PATH" >> $GITHUB_ENV      
 
-    - name: Install and Setup JetBrains Runtime
+    - name: Install and Setup JetBrains Runtime (Windows)
+      if: runner.os == 'Windows'
+      shell: bash
+      env:
+        JBR_URL_Windows_X64: 'https://cache-redirector.jetbrains.com/intellij-jbr/jbr_jcef-17.0.9-windows-x64-b1000.46.tar.gz'
+      run: |
+        choco install wget -y
+        mkdir -p "$HOME/.jdks/jbr17"
+        wget -q -O - "$JBR_URL_${{ runner.os }}_${{ runner.arch }}" | tar -xzf - --strip-components=1 -C "$HOME/.jdks/jbr17"
+
+    - name: Setup JAVA_HOME and PATH (Windows)
+      if: runner.os == 'Windows'
+      shell: powershell
+      run: |
+        echo "JAVA_HOME=$HOME\.jdks\jbr17" >> $env:GITHUB_ENV
+        echo "PATH=$HOME\.jdks\jbr17\bin;$env:PATH" >> $env:GITHUB_ENV
+
+    - name: Install and Setup JetBrains Runtime (macOS)
       if: runner.os == 'macOS'
       shell: bash
       env:
@@ -27,12 +39,9 @@ runs:
         JBR_URL_macOS_ARM64: 'https://cache-redirector.jetbrains.com/intellij-jbr/jbr_jcef-17.0.9-osx-aarch64-b1000.46.tar.gz'
       run: |
         mkdir -p "$HOME/.jdks/jbr17"
-        wget -q -O - "$JBR_URL_${{ runner.os }}_${{ runner.arch }}" | tar -xzf - --strip-components=1 -C "$HOME/.jdks/jbr17"
+        wget -q -O - "$JBR_URL_${{ runner.os }}_${{ runner.arch }}" | tar -xzf - --strip-components=1 -C "$HOME/.jdks/jbr17"        
         echo "JAVA_HOME=$HOME/.jdks/jbr17/Contents/Home" >> $GITHUB_ENV
-
-    - name: Setup PATH
-      shell: bash
-      run: echo "PATH=$JAVA_HOME/bin:$PATH" >> $GITHUB_ENV
+        echo "PATH=$HOME/.jdks/jbr17/Contents/Home/bin:$PATH" >> $GITHUB_ENV
 
     - name: Verify Java Setup
       shell: bash
