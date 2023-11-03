@@ -3,9 +3,14 @@ description: Setup JetBrains Runtime 17
 runs:
   using: composite
   steps:
-    - name: Install and Setup JetBrains Runtime (Linux / Windows)
+    - name: Install Windows Requirements to Install JetBrains Install
+      if: runner.os == 'Windows'
       shell: bash
+      run: choco install wget -y
+
+    - name: Install and Setup JetBrains Runtime
       if: runner.os != 'macOS'
+      shell: bash
       env:
         JBR_URL_Linux_X64: 'https://cache-redirector.jetbrains.com/intellij-jbr/jbr_jcef-17.0.9-linux-x64-b1000.46.tar.gz'
         JBR_URL_Windows_X64: 'https://cache-redirector.jetbrains.com/intellij-jbr/jbr_jcef-17.0.9-windows-x64-b1000.46.tar.gz'
@@ -14,9 +19,9 @@ runs:
         wget -q -O - "$JBR_URL_${{ runner.os }}_${{ runner.arch }}" | tar -xzf - --strip-components=1 -C "$HOME/.jdks/jbr17"
         echo "JAVA_HOME=$HOME/.jdks/jbr17" >> $GITHUB_ENV
 
-    - name: Install and Setup JetBrains Runtime (macOS)
-      shell: bash
+    - name: Install and Setup JetBrains Runtime
       if: runner.os == 'macOS'
+      shell: bash
       env:
         JBR_URL_macOS_X64: 'https://cache-redirector.jetbrains.com/intellij-jbr/jbr_jcef-17.0.9-osx-x64-b1000.46.tar.gz'
         JBR_URL_macOS_ARM64: 'https://cache-redirector.jetbrains.com/intellij-jbr/jbr_jcef-17.0.9-osx-aarch64-b1000.46.tar.gz'
