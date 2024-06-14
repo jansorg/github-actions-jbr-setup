@@ -1,0 +1,51 @@
+# https://github.com/JetBrains/JetBrainsRuntime/releases
+name: JetBrains Runtime Setup
+description: Setup JetBrains Runtime 21
+runs:
+  using: composite
+  steps:
+    - name: Install and Setup JetBrains Runtime (Linux)
+      if: runner.os == 'Linux'
+      shell: bash
+      env:
+        JBR_URL_Linux_X64: 'https://cache-redirector.jetbrains.com/intellij-jbr/jbr_jcef-21.0.3-linux-x64-b480.1.tar.gz'
+      run: |
+        mkdir -p "$HOME/.jdks/jbr21"
+        wget -q -O - "$JBR_URL_${{ runner.os }}_${{ runner.arch }}" | tar -xzf - --strip-components=1 -C "$HOME/.jdks/jbr21"
+        echo "JAVA_HOME=$HOME/.jdks/jbr21" >> $GITHUB_ENV
+        echo "PATH=$HOME/.jdks/jbr21/bin:$PATH" >> $GITHUB_ENV
+
+    - name: Install and Setup JetBrains Runtime (Windows)
+      if: runner.os == 'Windows'
+      shell: bash
+      env:
+        JBR_URL_Windows_X64: 'https://cache-redirector.jetbrains.com/intellij-jbr/jbr_jcef-21.0.3-windows-x64-b480.1.tar.gz'
+      run: |
+        choco install wget -y
+        mkdir -p "$HOME/.jdks/jbr21"
+        wget -q -O - "$JBR_URL_${{ runner.os }}_${{ runner.arch }}" | tar -xzf - --strip-components=1 -C "$HOME/.jdks/jbr21"
+
+    - name: Setup JAVA_HOME and PATH (Windows)
+      if: runner.os == 'Windows'
+      shell: powershell
+      run: |
+        echo "JAVA_HOME=$HOME\.jdks\jbr21" >> $env:GITHUB_ENV
+        echo "PATH=$HOME\.jdks\jbr21\bin;$env:PATH" >> $env:GITHUB_ENV
+
+    - name: Install and Setup JetBrains Runtime (macOS)
+      if: runner.os == 'macOS'
+      shell: bash
+      env:
+        JBR_URL_macOS_X64: 'https://cache-redirector.jetbrains.com/intellij-jbr/jbr_jcef-21.0.3-osx-x64-b480.1.tar.gz'
+        JBR_URL_macOS_ARM64: 'https://cache-redirector.jetbrains.com/intellij-jbr/jbr_jcef-21.0.3-osx-aarch64-b480.1.tar.gz'
+      run: |
+        mkdir -p "$HOME/.jdks/jbr21"
+        wget -q -O - "$JBR_URL_${{ runner.os }}_${{ runner.arch }}" | tar -xzf - --strip-components=1 -C "$HOME/.jdks/jbr21"        
+        echo "JAVA_HOME=$HOME/.jdks/jbr21/Contents/Home" >> $GITHUB_ENV
+        echo "PATH=$HOME/.jdks/jbr21/Contents/Home/bin:$PATH" >> $GITHUB_ENV
+
+    - name: Verify Java Setup
+      shell: bash
+      run: |
+        java --version
+        which java
