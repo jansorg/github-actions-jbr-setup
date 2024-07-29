@@ -8,7 +8,7 @@ runs:
       if: runner.os == 'Linux'
       shell: bash
       env:
-        JBR_URL_Linux_X64: 'https://cache-redirector.jetbrains.com/intellij-jbr/jbr_jcef-17.0.11-linux-x64-b1207.23.tar.gz'
+        JBR_URL_Linux_X64: 'https://cache-redirector.jetbrains.com/intellij-jbr/jbr_jcef-17.0.11-linux-x64-b1312.2.tar.gz'
       run: |
         mkdir -p "$HOME/.jdks/jbr17"
         wget -q -O - "$JBR_URL_${{ runner.os }}_${{ runner.arch }}" | tar -xzf - --strip-components=1 -C "$HOME/.jdks/jbr17"
@@ -19,7 +19,7 @@ runs:
       if: runner.os == 'Windows'
       shell: bash
       env:
-        JBR_URL_Windows_X64: 'https://cache-redirector.jetbrains.com/intellij-jbr/jbr_jcef-17.0.11-windows-x64-b1207.23.tar.gz'
+        JBR_URL_Windows_X64: 'https://cache-redirector.jetbrains.com/intellij-jbr/jbr_jcef-17.0.11-windows-x64-b1312.2.tar.gz'
       run: |
         choco install wget -y
         mkdir -p "$HOME/.jdks/jbr17"
@@ -36,8 +36,8 @@ runs:
       if: runner.os == 'macOS'
       shell: bash
       env:
-        JBR_URL_macOS_X64: 'https://cache-redirector.jetbrains.com/intellij-jbr/jbr_jcef-17.0.11-osx-x64-b1207.23.tar.gz'
-        JBR_URL_macOS_ARM64: 'https://cache-redirector.jetbrains.com/intellij-jbr/jbr_jcef-17.0.11-osx-aarch64-b1207.23.tar.gz'
+        JBR_URL_macOS_X64: 'https://cache-redirector.jetbrains.com/intellij-jbr/jbr_jcef-17.0.11-osx-x64-b1312.2.tar.gz'
+        JBR_URL_macOS_ARM64: 'https://cache-redirector.jetbrains.com/intellij-jbr/jbr_jcef-17.0.11-osx-aarch64-b1312.2.tar.gz'
       run: |
         mkdir -p "$HOME/.jdks/jbr17"
         wget -q -O - "$JBR_URL_${{ runner.os }}_${{ runner.arch }}" | tar -xzf - --strip-components=1 -C "$HOME/.jdks/jbr17"        
